@@ -64,4 +64,33 @@ app.post("/api/deportistas", (req, res) => {
   res.status(200).send(deportistas);
 });
 
+app.put("/api/deportistas/:id", (req, res) => {
+  const idDepor = parseInt(req.params.id);
+  indivDepor = deportistas.find((depor) => {
+    return depor.id === idDepor;
+  });
+  if (!indivDepor) {
+    res.send(404).send("Error Usuario");
+  } else {
+    (indivDepor.nombre = req.body.nombre),
+      (indivDepor.apellidos = req.body.apellidos),
+      (indivDepor.actividad = req.body.actividad);
+  }
+  res.status(200).send(deportistas);
+});
+
+app.delete("/api/deportistas/:id", (req, res) => {
+  const idDepor = parseInt(req.params.id);
+  indivDepor = deportistas.find((depor) => {
+    return depor.id === idDepor;
+  });
+  if (!indivDepor) {
+    res.send(404).send("Error Usuario");
+  } else {
+    const posicion = deportistas.indexOf(indivDepor);
+    deportistas.splice(posicion, 1);
+    res.status(200).send("Deportista eliminado..");
+  }
+});
+
 app.listen(port, () => console.log("Servidor Listing .."));
