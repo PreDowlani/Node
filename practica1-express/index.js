@@ -1,7 +1,11 @@
 const { json } = require("express");
 const express = require("express");
+const { valid } = require("joi");
 const app = express();
 let port = 5000;
+const Joi = require("joi");
+
+// VALIDAR SOLO EN POST Y PUT -- JOI
 
 const deportistas = [
   {
@@ -9,24 +13,36 @@ const deportistas = [
     nombre: "Rafa",
     apellidos: "NadaL",
     actividad: "Tennis",
+    date: "06-25-1985", //Feach : MES-DIA-AÑO
+    // from: "",
+    // to: "",
   },
   {
     id: 2,
     nombre: "Fernando",
     apellidos: "Alonso",
     actividad: "Formula-1",
+    date: "03-21-2012",
+    // from: "",
+    // to: "",
   },
   {
     id: 3,
     nombre: "Roger",
     apellidos: "Federer",
     actividad: "Tennis",
+    date: "01-01-2020",
+    // from: "",
+    // to: "",
   },
   {
     id: 4,
     nombre: "Pre",
     apellidos: "Dowlani",
     actividad: "NINI",
+    date: "04-15-1992",
+    // from: "",
+    // to: "",
   },
 ];
 
@@ -53,11 +69,26 @@ app.get("/api/deportistas/:id", (req, res) => {
 });
 
 app.post("/api/deportistas", (req, res) => {
+  const schema = Joi.object({
+    nombre: Joi.string().min(4).required(),
+    apellidos: Joi.string().min(4).required(),
+    actividad: Joi.string().min(6).required(),
+    date: Joi.date().greater("01-12-1995"),
+    // from: Joi.date().required(),
+    // to: Joi.date().greater(Joi.ref("from")).required(),
+  });
+  const validacion = schema.validate(req.body);
+  if (validacion.error) {
+    console.log(validacion.error.details[0].message);
+    res.status(400).send(validacion.error.details[0].message);
+    return;
+  }
   const newUser = {
     id: deportistas.length + 1,
     nombre: req.body.nombre,
     apellidos: req.body.apellidos,
     actividad: req.body.actividad,
+    date: req.body.date,
   };
 
   deportistas.push(newUser);
